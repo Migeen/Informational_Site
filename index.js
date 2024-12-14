@@ -1,54 +1,28 @@
-var http = require('http');
-var url = require('url');
-var fs = require('fs');
+const express = require('express');
+const path = require('path');
 
-http.createServer( (req, res) => {
-    res.writeHead(200, { 'Content-Type': 'text/html' });
+const app = express();
 
-    var pathName = url.parse(req.url).pathname;
+// Serve the appropriate HTML file based on the route
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 
-    if (pathName === '/') {
-        fs.readFile(('./index.html'), function (error, data) {
-            if (error) {
-                res.writeHead(500);
-                res.write('Error');
-                return res.end();
-            }
-            res.write(data);
-            return res.end();
-        })
-    }
-    else if (pathName === '/about') {
-        fs.readFile(('./about.html'), function(error, data){
-            if(error) {
-                res.writeHead(500);
-                res.write('Error');
-                return res.end();
-            }
-            res.write(data);
-            return res.end();
-        })
-    }
-    else if(pathName === '/contact') {
-        fs.readFile(('./contact-me.html'), function(error, data){
-            if(error) {
-                res.writeHead(500);
-                res.write('Error');
-                return res.end();
-            }
-            res.write(data);
-            return res.end();
-        })
-    }
-    else{
-        fs.readFile(('./404.html'), function(error, data){
-            if(error) {
-                res.writeHead(500);
-                res.write('Error');
-                return res.end();
-            }
-            res.write(data);
-            return res.end();
-        })
-    }
-}).listen(8080);
+app.get('/about', (req, res) => {
+    res.sendFile(path.join(__dirname, 'about.html'));
+});
+
+app.get('/contact', (req, res) => {
+    res.sendFile(path.join(__dirname, 'contact-me.html'));
+});
+
+// Handle 404 for other routes
+app.use((req, res) => {
+    res.status(404).sendFile(path.join(__dirname, '404.html'));
+});
+
+const PORT = 3000;
+
+app.listen(PORT, () => {
+    console.log(`My first express app - listening on port ${PORT}`);
+});
